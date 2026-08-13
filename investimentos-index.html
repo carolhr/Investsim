@@ -1,0 +1,1911 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>InvestSim | Simulador de Perfil de Investidor</title>
+
+    <!-- Biblioteca para os gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            background: #f1f5f9;
+            color: #1e293b;
+            min-height: 100vh;
+        }
+
+        /* =========================
+           CONTAINER
+        ========================= */
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        /* =========================
+           CABEÇALHO
+        ========================= */
+
+        header {
+            text-align: center;
+            padding: 35px 20px 25px;
+        }
+
+        .logo {
+            display: inline-block;
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #4f46e5;
+            margin-bottom: 10px;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            color: #0f172a;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: #64748b;
+            max-width: 650px;
+            margin: auto;
+            line-height: 1.6;
+        }
+
+        /* =========================
+           ETAPAS
+        ========================= */
+
+        .progress {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px auto 30px;
+            max-width: 750px;
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .progress-step:last-child {
+            flex: 0;
+        }
+
+        .circle {
+            width: 34px;
+            height: 34px;
+            min-width: 34px;
+            border-radius: 50%;
+            background: #cbd5e1;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .circle.active {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .line {
+            height: 3px;
+            background: #cbd5e1;
+            flex: 1;
+            margin: 0 5px;
+        }
+
+        .line.active {
+            background: #4f46e5;
+        }
+
+        /* =========================
+           CARD
+        ========================= */
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(15, 23, 42, 0.06);
+            border: 1px solid #e2e8f0;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* =========================
+           PÁGINA INICIAL
+        ========================= */
+
+        .hero {
+            text-align: center;
+            padding: 45px 25px;
+        }
+
+        .hero-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+        }
+
+        .hero h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #0f172a;
+        }
+
+        .hero p {
+            color: #64748b;
+            line-height: 1.7;
+            max-width: 650px;
+            margin: 0 auto 25px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .feature {
+            background: #f8fafc;
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .feature-icon {
+            font-size: 1.7rem;
+            margin-bottom: 10px;
+        }
+
+        .feature strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .feature span {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        /* =========================
+           BOTÕES
+        ========================= */
+
+        .primary-btn {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 14px 28px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .primary-btn:hover {
+            background: #4338ca;
+            transform: translateY(-1px);
+        }
+
+        .secondary-btn {
+            background: #e2e8f0;
+            color: #334155;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 22px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* =========================
+           FORMULÁRIO
+        ========================= */
+
+        .section-title {
+            margin-bottom: 8px;
+            color: #0f172a;
+        }
+
+        .section-subtitle {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+        }
+
+        /* =========================
+           QUESTIONÁRIO
+        ========================= */
+
+        .question-number {
+            color: #4f46e5;
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .question {
+            font-size: 1.35rem;
+            margin: 10px 0 25px;
+            line-height: 1.4;
+        }
+
+        .option {
+            width: 100%;
+            text-align: left;
+            padding: 16px;
+            margin-bottom: 12px;
+            background: white;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #334155;
+        }
+
+        .option:hover {
+            border-color: #4f46e5;
+            background: #f5f3ff;
+            transform: translateX(3px);
+        }
+
+        /* =========================
+           PERFIL
+        ========================= */
+
+        .profile-card {
+            text-align: center;
+            padding: 35px 20px;
+            border-radius: 18px;
+            color: white;
+            background: linear-gradient(135deg, #312e81, #4f46e5);
+        }
+
+        .profile-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .profile-card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .profile-card p {
+            color: #e0e7ff;
+            line-height: 1.6;
+            max-width: 650px;
+            margin: auto;
+        }
+
+        .score {
+            display: inline-block;
+            margin-top: 18px;
+            padding: 7px 14px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.15);
+            font-size: 0.8rem;
+        }
+
+        /* =========================
+           CARTEIRA
+        ========================= */
+
+        .allocation {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .asset {
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 18px;
+        }
+
+        .asset-name {
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .asset-percent {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #4f46e5;
+        }
+
+        .asset-description {
+            color: #64748b;
+            font-size: 0.78rem;
+            margin-top: 5px;
+        }
+
+        /* =========================
+           GRÁFICOS
+        ========================= */
+
+        .charts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 18px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .chart-card h3 {
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 280px;
+        }
+
+        .projection-result {
+            background: #f8fafc;
+            border-radius: 14px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .projection-result span {
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        .projection-result strong {
+            display: block;
+            font-size: 2rem;
+            color: #4f46e5;
+            margin-top: 5px;
+        }
+
+        /* =========================
+           CONCLUSÃO
+        ========================= */
+
+        .conclusion {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .conclusion-icon {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+        }
+
+        .conclusion h2 {
+            margin-bottom: 12px;
+        }
+
+        .conclusion p {
+            color: #64748b;
+            line-height: 1.7;
+            max-width: 650px;
+            margin: auto auto 25px;
+        }
+
+        .disclaimer {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #9a3412;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 0.78rem;
+            line-height: 1.5;
+            margin-top: 25px;
+        }
+
+        /* =========================
+           RESPONSIVO
+        ========================= */
+
+        @media(max-width: 650px) {
+
+            header h1 {
+                font-size: 1.7rem;
+            }
+
+            .features,
+            .charts,
+            .allocation {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .progress {
+                padding: 0 10px;
+            }
+
+            .hero {
+                padding: 30px 10px;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <!-- =========================
+         CABEÇALHO
+    ========================= -->
+
+    <header>
+
+        <div class="logo">
+            INVESTSIM
+        </div>
+
+        <h1>
+            Simulador de Perfil de Investidor
+        </h1>
+
+        <p>
+            Uma ferramenta educacional para entender seu perfil,
+            visualizar uma carteira ilustrativa e explorar uma
+            projeção patrimonial.
+        </p>
+
+    </header>
+
+
+    <!-- =========================
+         BARRA DE PROGRESSO
+    ========================= -->
+
+    <div class="progress">
+
+        <div class="progress-step">
+            <div class="circle active" id="step1">1</div>
+            <div class="line" id="line1"></div>
+        </div>
+
+        <div class="progress-step">
+            <div class="circle" id="step2">2</div>
+            <div class="line" id="line2"></div>
+        </div>
+
+        <div class="progress-step">
+            <div class="circle" id="step3">3</div>
+            <div class="line" id="line3"></div>
+        </div>
+
+        <div class="progress-step">
+            <div class="circle" id="step4">4</div>
+            <div class="line" id="line4"></div>
+        </div>
+
+        <div class="progress-step">
+            <div class="circle" id="step5">5</div>
+            <div class="line" id="line5"></div>
+        </div>
+
+        <div class="progress-step">
+            <div class="circle" id="step6">6</div>
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         ETAPA 1
+         PÁGINA INICIAL
+    ========================= -->
+
+    <section id="page-home" class="card">
+
+        <div class="hero">
+
+            <div class="hero-icon">
+                📊
+            </div>
+
+            <h2>
+                Conheça seu perfil de investidor
+            </h2>
+
+            <p>
+                Responda algumas perguntas sobre seus objetivos,
+                horizonte de tempo, tolerância a oscilações e
+                experiência com investimentos.
+            </p>
+
+            <div class="features">
+
+                <div class="feature">
+                    <div class="feature-icon">🎯</div>
+                    <strong>Perfil</strong>
+                    <span>
+                        Identifique seu perfil de risco.
+                    </span>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon">💼</div>
+                    <strong>Carteira</strong>
+                    <span>
+                        Veja uma alocação ilustrativa.
+                    </span>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon">📈</div>
+                    <strong>Projeção</strong>
+                    <span>
+                        Explore uma simulação patrimonial.
+                    </span>
+                </div>
+
+            </div>
+
+            <button
+                class="primary-btn"
+                onclick="startSimulation()"
+            >
+                Começar simulação
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         ETAPA 2
+         DADOS INICIAIS
+    ========================= -->
+
+    <section id="page-data" class="card hidden">
+
+        <h2 class="section-title">
+            Antes de começar
+        </h2>
+
+        <p class="section-subtitle">
+            Informe alguns valores para personalizar a simulação.
+        </p>
+
+        <div class="input-group">
+
+            <label>
+                Quanto você pretende investir inicialmente?
+            </label>
+
+            <input
+                type="number"
+                id="initialInvestment"
+                value="10000"
+                min="0"
+                step="100"
+                placeholder="Ex.: 10000"
+            >
+
+        </div>
+
+
+        <div class="input-group">
+
+            <label>
+                Qual será seu aporte mensal?
+            </label>
+
+            <input
+                type="number"
+                id="monthlyContribution"
+                value="500"
+                min="0"
+                step="50"
+                placeholder="Ex.: 500"
+            >
+
+        </div>
+
+
+        <button
+            class="primary-btn"
+            onclick="startQuestions()"
+        >
+            Continuar
+        </button>
+
+    </section>
+
+
+    <!-- =========================
+         ETAPA 3
+         QUESTIONÁRIO
+    ========================= -->
+
+    <section id="page-quiz" class="card hidden">
+
+        <span
+            id="questionNumber"
+            class="question-number"
+        >
+            Pergunta 1 de 5
+        </span>
+
+        <h2
+            id="questionText"
+            class="question"
+        >
+            Carregando...
+        </h2>
+
+        <div id="options"></div>
+
+    </section>
+
+
+    <!-- =========================
+         ETAPA 4
+         PERFIL
+    ========================= -->
+
+    <section id="page-profile" class="hidden">
+
+        <div class="profile-card">
+
+            <div
+                id="profileIcon"
+                class="profile-icon"
+            >
+                🛡️
+            </div>
+
+            <h2 id="profileName">
+                Perfil
+            </h2>
+
+            <p id="profileDescription">
+                Descrição
+            </p>
+
+            <div
+                id="profileScore"
+                class="score"
+            >
+                Pontuação
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h2 class="section-title">
+                O que isso significa?
+            </h2>
+
+            <p
+                id="profileExplanation"
+                style="color:#64748b; line-height:1.7; margin-top:10px;"
+            >
+            </p>
+
+            <br>
+
+            <button
+                class="primary-btn"
+                onclick="showPortfolio()"
+            >
+                Ver carteira ilustrativa →
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         ETAPA 5
+         CARTEIRA
+    ========================= -->
+
+    <section id="page-portfolio" class="hidden">
+
+        <div class="card">
+
+            <h2 class="section-title">
+                Carteira ilustrativa
+            </h2>
+
+            <p class="section-subtitle">
+                Uma possível distribuição de acordo com o perfil identificado.
+            </p>
+
+            <div
+                id="allocation"
+                class="allocation"
+            ></div>
+
+            <br>
+
+            <button
+                class="primary-btn"
+                onclick="showCharts()"
+            >
+                Ver gráficos →
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         ETAPA 6
+         GRÁFICOS
+    ========================= -->
+
+    <section id="page-charts" class="hidden">
+
+        <div class="charts">
+
+            <div class="chart-card">
+
+                <h3>
+                    Distribuição da carteira
+                </h3>
+
+                <div class="chart-wrapper">
+
+                    <canvas id="allocationChart"></canvas>
+
+                </div>
+
+            </div>
+
+
+            <div class="chart-card">
+
+                <h3>
+                    Perfil de risco
+                </h3>
+
+                <div class="chart-wrapper">
+
+                    <canvas id="riskChart"></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3 style="margin-bottom:20px;">
+                Projeção patrimonial ilustrativa
+            </h3>
+
+            <div class="chart-wrapper">
+
+                <canvas id="projectionChart"></canvas>
+
+            </div>
+
+
+            <div class="projection-result">
+
+                <span>
+                    Patrimônio estimado ao final da simulação
+                </span>
+
+                <strong id="finalValue">
+                    R$ 0,00
+                </strong>
+
+            </div>
+
+
+            <br>
+
+            <button
+                class="primary-btn"
+                onclick="showConclusion()"
+            >
+                Ver conclusão →
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         ETAPA 7
+         CONCLUSÃO
+    ========================= -->
+
+    <section id="page-conclusion" class="card hidden">
+
+        <div class="conclusion">
+
+            <div class="conclusion-icon">
+                🎯
+            </div>
+
+            <h2>
+                Simulação concluída!
+            </h2>
+
+            <p id="conclusionText">
+                Sua análise foi concluída.
+            </p>
+
+            <button
+                class="primary-btn"
+                onclick="resetSimulation()"
+            >
+                Fazer novamente
+            </button>
+
+            <div class="disclaimer">
+
+                <strong>Importante:</strong>
+                este simulador possui finalidade exclusivamente
+                educacional. Os percentuais, valores e projeções
+                apresentados são hipotéticos e não constituem
+                recomendação de investimento, promessa de rentabilidade
+                ou garantia de resultados futuros.
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<script>
+
+    /* =========================================================
+       PERGUNTAS
+    ========================================================= */
+
+    const questions = [
+
+        {
+            text: "Qual é o seu principal objetivo ao investir?",
+            options: [
+                {
+                    text: "Preservar meu patrimônio e evitar perdas.",
+                    points: 1
+                },
+                {
+                    text: "Equilibrar segurança e crescimento.",
+                    points: 2
+                },
+                {
+                    text: "Buscar crescimento elevado do patrimônio.",
+                    points: 3
+                }
+            ]
+        },
+
+        {
+            text: "Por quanto tempo pretende manter seus investimentos?",
+            options: [
+                {
+                    text: "Menos de 1 ano.",
+                    points: 1
+                },
+                {
+                    text: "Entre 1 e 5 anos.",
+                    points: 2
+                },
+                {
+                    text: "Mais de 5 anos.",
+                    points: 3
+                }
+            ]
+        },
+
+        {
+            text: "Como você reagiria se sua carteira caísse 10% em um mês?",
+            options: [
+                {
+                    text: "Ficaria preocupado e provavelmente venderia.",
+                    points: 1
+                },
+                {
+                    text: "Esperaria uma recuperação.",
+                    points: 2
+                },
+                {
+                    text: "Analisaria a oportunidade de investir mais.",
+                    points: 3
+                }
+            ]
+        },
+
+        {
+            text: "Qual é seu nível de conhecimento sobre investimentos?",
+            options: [
+                {
+                    text: "Tenho pouca ou nenhuma experiência.",
+                    points: 1
+                },
+                {
+                    text: "Conheço renda fixa e alguns investimentos.",
+                    points: 2
+                },
+                {
+                    text: "Tenho bastante conhecimento sobre diferentes ativos.",
+                    points: 3
+                }
+            ]
+        },
+
+        {
+            text: "Qual situação representa melhor sua relação com risco?",
+            options: [
+                {
+                    text: "Prefiro ganhar menos, mas ter maior previsibilidade.",
+                    points: 1
+                },
+                {
+                    text: "Aceito algum risco para buscar melhores resultados.",
+                    points: 2
+                },
+                {
+                    text: "Aceito oscilações maiores pensando no longo prazo.",
+                    points: 3
+                }
+            ]
+        }
+
+    ];
+
+
+    /* =========================================================
+       PERFIS
+    ========================================================= */
+
+    const profiles = {
+
+        conservador: {
+
+            name: "Investidor Conservador",
+
+            icon: "🛡️",
+
+            description:
+                "Seu foco principal está na preservação do patrimônio e na busca por maior previsibilidade.",
+
+            explanation:
+                "Esse perfil tende a valorizar segurança, liquidez e menor exposição às oscilações. Em uma simulação educacional, a maior parte da carteira é direcionada para categorias de menor volatilidade.",
+
+            allocation: [
+                {
+                    name: "Renda fixa",
+                    percent: 70,
+                    description: "Categoria voltada à previsibilidade."
+                },
+                {
+                    name: "Liquidez",
+                    percent: 20,
+                    description: "Reserva para necessidades de curto prazo."
+                },
+                {
+                    name: "Outros ativos",
+                    percent: 10,
+                    description: "Pequena exposição para diversificação."
+                }
+            ],
+
+            expectedRate: 0.007,
+
+            risk: [
+                85,
+                10,
+                5
+            ]
+
+        },
+
+
+        moderado: {
+
+            name: "Investidor Moderado",
+
+            icon: "⚖️",
+
+            description:
+                "Você busca equilíbrio entre segurança, diversificação e potencial de crescimento.",
+
+            explanation:
+                "Esse perfil aceita oscilações moderadas para buscar resultados superiores aos investimentos mais conservadores. A diversificação assume papel importante na carteira.",
+
+            allocation: [
+                {
+                    name: "Renda fixa",
+                    percent: 50,
+                    description: "Base de estabilidade da carteira."
+                },
+                {
+                    name: "Fundos imobiliários",
+                    percent: 20,
+                    description: "Exposição ao mercado imobiliário."
+                },
+                {
+                    name: "Ações",
+                    percent: 20,
+                    description: "Busca de crescimento no longo prazo."
+                },
+                {
+                    name: "Liquidez",
+                    percent: 10,
+                    description: "Recursos de curto prazo."
+                }
+            ],
+
+            expectedRate: 0.009,
+
+            risk: [
+                50,
+                30,
+                20
+            ]
+
+        },
+
+
+        agressivo: {
+
+            name: "Investidor Agressivo",
+
+            icon: "🚀",
+
+            description:
+                "Você demonstra maior tolerância às oscilações e busca crescimento do patrimônio no longo prazo.",
+
+            explanation:
+                "Esse perfil aceita maior volatilidade em troca de potencial de crescimento. A diversificação continua importante, especialmente para evitar concentração excessiva em uma única categoria.",
+
+            allocation: [
+                {
+                    name: "Ações",
+                    percent: 40,
+                    description: "Maior exposição ao crescimento."
+                },
+                {
+                    name: "Ativos globais",
+                    percent: 25,
+                    description: "Diversificação internacional."
+                },
+                {
+                    name: "Outros ativos",
+                    percent: 20,
+                    description: "Categorias de maior volatilidade."
+                },
+                {
+                    name: "Renda fixa",
+                    percent: 15,
+                    description: "Componente de diversificação."
+                }
+            ],
+
+            expectedRate: 0.011,
+
+            risk: [
+                20,
+                30,
+                50
+            ]
+
+        }
+
+    };
+
+
+    /* =========================================================
+       VARIÁVEIS
+    ========================================================= */
+
+    let currentQuestion = 0;
+
+    let totalScore = 0;
+
+    let initialInvestment = 10000;
+
+    let monthlyContribution = 500;
+
+    let selectedProfile = null;
+
+    let allocationChart = null;
+
+    let riskChart = null;
+
+    let projectionChart = null;
+
+
+    /* =========================================================
+       CONTROLE DE PÁGINAS
+    ========================================================= */
+
+    function hideAllPages() {
+
+        document
+            .querySelectorAll(
+                "#page-home, #page-data, #page-quiz, #page-profile, #page-portfolio, #page-charts, #page-conclusion"
+            )
+            .forEach(function(page) {
+
+                page.classList.add("hidden");
+
+            });
+
+    }
+
+
+    function showPage(id) {
+
+        hideAllPages();
+
+        document
+            .getElementById(id)
+            .classList.remove("hidden");
+
+    }
+
+
+    /* =========================================================
+       PROGRESSO
+    ========================================================= */
+
+    function updateProgress(step) {
+
+        for (let i = 1; i <= 6; i++) {
+
+            const circle =
+                document.getElementById("step" + i);
+
+            if (i <= step) {
+
+                circle.classList.add("active");
+
+            } else {
+
+                circle.classList.remove("active");
+
+            }
+
+        }
+
+        for (let i = 1; i <= 5; i++) {
+
+            const line =
+                document.getElementById("line" + i);
+
+            if (i < step) {
+
+                line.classList.add("active");
+
+            } else {
+
+                line.classList.remove("active");
+
+            }
+
+        }
+
+    }
+
+
+    /* =========================================================
+       INICIAR
+    ========================================================= */
+
+    function startSimulation() {
+
+        updateProgress(2);
+
+        showPage("page-data");
+
+    }
+
+
+    function startQuestions() {
+
+        initialInvestment =
+            Number(
+                document.getElementById("initialInvestment").value
+            ) || 0;
+
+        monthlyContribution =
+            Number(
+                document.getElementById("monthlyContribution").value
+            ) || 0;
+
+        currentQuestion = 0;
+
+        totalScore = 0;
+
+        updateProgress(2);
+
+        showPage("page-quiz");
+
+        loadQuestion();
+
+    }
+
+
+    /* =========================================================
+       CARREGAR PERGUNTA
+    ========================================================= */
+
+    function loadQuestion() {
+
+        const question =
+            questions[currentQuestion];
+
+        document.getElementById("questionNumber")
+            .innerText =
+            `Pergunta ${currentQuestion + 1} de ${questions.length}`;
+
+        document.getElementById("questionText")
+            .innerText =
+            question.text;
+
+        const options =
+            document.getElementById("options");
+
+        options.innerHTML = "";
+
+
+        question.options.forEach(function(option) {
+
+            const button =
+                document.createElement("button");
+
+            button.className = "option";
+
+            button.innerText =
+                option.text;
+
+            button.onclick = function() {
+
+                selectAnswer(option.points);
+
+            };
+
+            options.appendChild(button);
+
+        });
+
+    }
+
+
+    /* =========================================================
+       RESPOSTA
+    ========================================================= */
+
+    function selectAnswer(points) {
+
+        totalScore += points;
+
+        currentQuestion++;
+
+        if (currentQuestion < questions.length) {
+
+            loadQuestion();
+
+        } else {
+
+            calculateProfile();
+
+        }
+
+    }
+
+
+    /* =========================================================
+       CALCULAR PERFIL
+    ========================================================= */
+
+    function calculateProfile() {
+
+        const average =
+            totalScore / questions.length;
+
+
+        if (average <= 1.5) {
+
+            selectedProfile =
+                profiles.conservador;
+
+        } else if (average <= 2.3) {
+
+            selectedProfile =
+                profiles.moderado;
+
+        } else {
+
+            selectedProfile =
+                profiles.agressivo;
+
+        }
+
+
+        showProfile();
+
+    }
+
+
+    /* =========================================================
+       MOSTRAR PERFIL
+    ========================================================= */
+
+    function showProfile() {
+
+        updateProgress(3);
+
+        document.getElementById("profileIcon")
+            .innerText =
+            selectedProfile.icon;
+
+        document.getElementById("profileName")
+            .innerText =
+            selectedProfile.name;
+
+        document.getElementById("profileDescription")
+            .innerText =
+            selectedProfile.description;
+
+        document.getElementById("profileExplanation")
+            .innerText =
+            selectedProfile.explanation;
+
+        document.getElementById("profileScore")
+            .innerText =
+            `Pontuação: ${totalScore} de ${questions.length * 3}`;
+
+        showPage("page-profile");
+
+    }
+
+
+    /* =========================================================
+       CARTEIRA
+    ========================================================= */
+
+    function showPortfolio() {
+
+        updateProgress(4);
+
+        const allocation =
+            document.getElementById("allocation");
+
+        allocation.innerHTML = "";
+
+
+        selectedProfile.allocation
+            .forEach(function(asset) {
+
+                const div =
+                    document.createElement("div");
+
+                div.className = "asset";
+
+                div.innerHTML = `
+
+                    <div class="asset-name">
+                        ${asset.name}
+                    </div>
+
+                    <div class="asset-percent">
+                        ${asset.percent}%
+                    </div>
+
+                    <div class="asset-description">
+                        ${asset.description}
+                    </div>
+
+                `;
+
+                allocation.appendChild(div);
+
+            });
+
+
+        showPage("page-portfolio");
+
+    }
+
+
+    /* =========================================================
+       GRÁFICOS
+    ========================================================= */
+
+    function showCharts() {
+
+        updateProgress(5);
+
+        showPage("page-charts");
+
+        createAllocationChart();
+
+        createRiskChart();
+
+        createProjectionChart();
+
+    }
+
+
+    /* =========================================================
+       GRÁFICO DE ALOCAÇÃO
+    ========================================================= */
+
+    function createAllocationChart() {
+
+        if (allocationChart) {
+
+            allocationChart.destroy();
+
+        }
+
+
+        const labels =
+            selectedProfile.allocation.map(
+                item => item.name
+            );
+
+        const values =
+            selectedProfile.allocation.map(
+                item => item.percent
+            );
+
+
+        const ctx =
+            document
+                .getElementById("allocationChart")
+                .getContext("2d");
+
+
+        allocationChart =
+            new Chart(ctx, {
+
+                type: "doughnut",
+
+                data: {
+
+                    labels: labels,
+
+                    datasets: [{
+
+    data: values,
+
+    backgroundColor: [
+        "#4f46e5",
+        "#14b8a6",
+        "#f59e0b",
+        "#ef4444",
+        "#8b5cf6"
+    ],
+
+    borderWidth: 2,
+
+    borderColor: "#ffffff"
+
+
+}]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    plugins: {
+
+                        legend: {
+                            position: "bottom"
+                        }
+
+                    }
+
+                }
+
+            });
+
+    }
+
+
+    /* =========================================================
+       GRÁFICO DE RISCO
+    ========================================================= */
+
+    function createRiskChart() {
+
+        if (riskChart) {
+
+            riskChart.destroy();
+
+        }
+
+
+        const ctx =
+            document
+                .getElementById("riskChart")
+                .getContext("2d");
+
+
+        riskChart =
+            new Chart(ctx, {
+
+                type: "bar",
+
+                data: {
+
+                    labels: [
+                        "Baixo risco",
+                        "Risco moderado",
+                        "Maior risco"
+                    ],
+
+                    datasets: [{
+
+                        label: "Distribuição ilustrativa",
+
+                        data:
+                            selectedProfile.risk
+
+                    }]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero: true,
+
+                            max: 100,
+
+                            ticks: {
+
+                                callback:
+                                    function(value) {
+
+                                        return value + "%";
+
+                                    }
+
+                            }
+
+                        }
+
+                    },
+
+                    plugins: {
+
+                        legend: {
+                            display: false
+                        }
+
+                    }
+
+                }
+
+            });
+
+    }
+
+
+    /* =========================================================
+       PROJEÇÃO PATRIMONIAL
+    ========================================================= */
+
+    function createProjectionChart() {
+
+        if (projectionChart) {
+
+            projectionChart.destroy();
+
+        }
+
+
+        const years = 10;
+
+        const labels = [];
+
+        const values = [];
+
+        let currentValue =
+            initialInvestment;
+
+
+        const monthlyRate =
+            selectedProfile.expectedRate;
+
+
+        for (let year = 1; year <= years; year++) {
+
+            for (let month = 1; month <= 12; month++) {
+
+                currentValue =
+                    currentValue * (1 + monthlyRate);
+
+                currentValue +=
+                    monthlyContribution;
+
+            }
+
+            labels.push(
+                "Ano " + year
+            );
+
+            values.push(
+                Math.round(currentValue)
+            );
+
+        }
+
+
+        const final =
+            values[values.length - 1];
+
+
+        document.getElementById("finalValue")
+            .innerText =
+            formatCurrency(final);
+
+
+        const ctx =
+            document
+                .getElementById("projectionChart")
+                .getContext("2d");
+
+
+        projectionChart =
+            new Chart(ctx, {
+
+                type: "line",
+
+                data: {
+
+                    labels: labels,
+
+                    datasets: [{
+
+                        label:
+                            "Patrimônio projetado",
+
+                        data: values,
+
+                        borderWidth: 3,
+
+                        fill: true,
+
+                        tension: 0.3
+
+                    }]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    scales: {
+
+                        y: {
+
+                            ticks: {
+
+                                callback:
+                                    function(value) {
+
+                                        return formatCurrency(value);
+
+                                    }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            });
+
+    }
+
+
+    /* =========================================================
+       CONCLUSÃO
+    ========================================================= */
+
+    function showConclusion() {
+
+        updateProgress(6);
+
+        const text =
+            document.getElementById("conclusionText");
+
+
+        text.innerHTML = `
+
+            Com base nas respostas fornecidas,
+            o simulador identificou o perfil
+            <strong>${selectedProfile.name}</strong>.
+
+            <br><br>
+
+            A carteira apresentada é uma representação
+            educacional de como diferentes níveis de
+            risco podem influenciar uma estratégia
+            de diversificação.
+
+            <br><br>
+
+            Use este projeto para estudar conceitos
+            como perfil de risco, diversificação,
+            alocação de ativos e juros compostos.
+
+        `;
+
+
+        showPage("page-conclusion");
+
+    }
+
+
+    /* =========================================================
+       FORMATAR MOEDA
+    ========================================================= */
+
+    function formatCurrency(value) {
+
+        return value.toLocaleString(
+            "pt-BR",
+            {
+                style: "currency",
+                currency: "BRL"
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       REINICIAR
+    ========================================================= */
+
+    function resetSimulation() {
+
+        if (allocationChart) {
+
+            allocationChart.destroy();
+
+            allocationChart = null;
+
+        }
+
+        if (riskChart) {
+
+            riskChart.destroy();
+
+            riskChart = null;
+
+        }
+
+        if (projectionChart) {
+
+            projectionChart.destroy();
+
+            projectionChart = null;
+
+        }
+
+        currentQuestion = 0;
+
+        totalScore = 0;
+
+        selectedProfile = null;
+
+        updateProgress(1);
+
+        showPage("page-home");
+
+    }
+
+
+    /* =========================================================
+       INICIALIZAÇÃO
+    ========================================================= */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function() {
+
+            updateProgress(1);
+
+            showPage("page-home");
+
+        }
+    );
+
+</script>
+
+</body>
+</html>
